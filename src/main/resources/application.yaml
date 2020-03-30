@@ -1,0 +1,4 @@
+fhose:
+  roleARN: "<<FIREHOSE ARN>>"
+  bucketARN: "<<S3 BUCKET ARN>>"
+  deliveryStreamName: "<<FIREHOSE STREAM NAME>>"
