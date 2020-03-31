@@ -14,7 +14,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 @Component
-@DependsOn("s3Sender")
+@DependsOn({"FHSender", "deliveryStream"})
 public class DataProcessor {
     private static Logger LOGGER = LoggerFactory.getLogger(DataProcessor.class);
 
@@ -28,10 +28,9 @@ public class DataProcessor {
 
     private static final String LOGGED_METRIC = "Avg Second Sent Messages: {} Throttled Messages TOTAL: {} Failed Message TOTAL: {}";
 
-
     private ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
 
-    public DataProcessor(final S3Sender s3Sender, final RecordBatch recordBatch,
+    public DataProcessor(final FHSender FHSender, final RecordBatch recordBatch,
                          final @Qualifier("failedCounter") Counter failedCounter,
                          final @Qualifier("throttledCounter") Counter throttledCounter,
                          final @Qualifier("sentMessageCounter") Counter sentMessageCounter) {
@@ -41,7 +40,7 @@ public class DataProcessor {
         this.sentMessageCounter = sentMessageCounter;
 
         //Setup the listener for when the batch is full and ready to send OR the timeout has been met ( 5 seconds )
-        recordBatch.setBatchListener(s3Sender::sendRecordsToS3Async);
+        recordBatch.setBatchListener(FHSender::sendRecordsToFHAsync);
     }
 
     @PostConstruct
@@ -51,6 +50,9 @@ public class DataProcessor {
 
         //Scheduele Counter printout
         executorService.scheduleAtFixedRate(this::printStats, 60, 10, TimeUnit.SECONDS);
+
+        //Flush it ever 10 seconds if no data is arriving
+        executorService.scheduleAtFixedRate(recordBatch::flushRecords, 30, 10, TimeUnit.SECONDS);
     }
 
     private void sendData() {

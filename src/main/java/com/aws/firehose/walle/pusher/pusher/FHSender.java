@@ -15,8 +15,8 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 @Component
-public class S3Sender {
-    private Logger logger = LoggerFactory.getLogger(S3Sender.class);
+public class FHSender {
+    private Logger logger = LoggerFactory.getLogger(FHSender.class);
 
     private final FirehoseAsyncClient firehoseAsyncClient;
 
@@ -27,13 +27,15 @@ public class S3Sender {
     @Value("${fhose.deliveryStreamName}")
     private String streamName;
 
-    public S3Sender(final FirehoseAsyncClient firehoseAsyncClient, final FirehoseMessageHandler firehoseMessageHandler, @Qualifier("sentMessageCounter") final Counter sentMessageCounter) {
+    public FHSender(final FirehoseAsyncClient firehoseAsyncClient,
+                    final FirehoseMessageHandler firehoseMessageHandler,
+                    @Qualifier("sentMessageCounter") final Counter sentMessageCounter) {
         this.firehoseAsyncClient = firehoseAsyncClient;
         this.firehoseMessageHandler = firehoseMessageHandler;
         this.sentMessageCounter = sentMessageCounter;
     }
 
-    void sendRecordsToS3Async(final List<Record> data) {
+    void sendRecordsToFHAsync(final List<Record> data) {
         sentMessageCounter.increment(data.size());
 
         final PutRecordBatchRequest request = PutRecordBatchRequest.builder()
@@ -45,7 +47,7 @@ public class S3Sender {
                 .whenComplete(firehoseMessageHandler.getPutRecordBatchResponseConsumer(request));
     }
 
-    void sendRecordsToS3Sync(final List<Record> data) {
+    void sendRecordsToFHSync(final List<Record> data) {
         try {
             sentMessageCounter.increment(data.size());
 

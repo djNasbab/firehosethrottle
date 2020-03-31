@@ -48,7 +48,7 @@ public class RecordBatch {
         return records.size() == MAX_RECORDS_IN_BATCH;
     }
 
-    void addRecord(final String data) {
+    public void addRecord(final String data) {
         final Record record = Record.builder().data(SdkBytes.fromUtf8String(data)).build();
         if (shouldCreateNewBatch()) {
             onFullRecord(this.records);
@@ -59,11 +59,11 @@ public class RecordBatch {
         }
     }
 
-    boolean shouldCreateNewBatch() {
+    private boolean shouldCreateNewBatch() {
         return shouldCreateNewBatchDueToRecordCount() || batchCreationTimedOut();
     }
 
-    boolean batchCreationTimedOut(){
+    private boolean batchCreationTimedOut(){
         if( lastProcessedTimeStamp != 0) {
             long now = System.currentTimeMillis();
             if ((now - lastProcessedTimeStamp) > LAST_BATCH_TIME_DIFF_ALLOWED_MILLIS) {
@@ -72,6 +72,18 @@ public class RecordBatch {
             }
         }
         return false;
+    }
+
+
+    /**
+     * If no data is coming for a while, periodically flush the buffer to make sure that we arent
+     */
+    void flushRecords() {
+        if (!records.isEmpty()) {
+            if (shouldCreateNewBatch()) {
+                onFullRecord(this.records);
+            }
+        }
     }
 
     void setBatchListener(final BatchFullCallback callback) {
