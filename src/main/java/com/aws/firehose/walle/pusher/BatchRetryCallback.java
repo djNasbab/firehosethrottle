@@ -10,5 +10,5 @@ public interface BatchRetryCallback {
      * If a batch fails while sending, make sure that we are distributing the batch back to storage
      * @param records
      */
-    void retryBatch(List<Record> records);PusherApplication
+    void retryBatch(List<Record> records);
 }
