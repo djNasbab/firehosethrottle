@@ -1,4 +1,4 @@
-package com.aws.firehose.walle.pusher.pusher;
+package com.aws.firehose.walle.pusher;
 
 import com.netflix.servo.monitor.BasicCounter;
 import com.netflix.servo.monitor.Counter;

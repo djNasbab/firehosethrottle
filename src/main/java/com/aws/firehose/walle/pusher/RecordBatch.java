@@ -1,4 +1,4 @@
-package com.aws.firehose.walle.pusher.pusher;
+package com.aws.firehose.walle.pusher;
 
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.services.firehose.model.Record;

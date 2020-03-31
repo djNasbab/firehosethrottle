@@ -1,4 +1,4 @@
-package com.aws.firehose.walle.pusher.pusher;
+package com.aws.firehose.walle.pusher;
 
 public class DeliveryStream {
 
