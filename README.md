@@ -18,6 +18,11 @@ $ mvn clean install
 
 Configure the application.yaml with your sources, currently supporting S3 as a destination. 
 
+code needs to have s3 bucket and firehose role with access setup in order to run, it will create its own delivery stream and
+connect the delivery stream to that s3. 
+
+
+
 ### running
 
 no docker yet... will be :) 
