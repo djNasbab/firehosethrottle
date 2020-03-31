@@ -5,6 +5,7 @@ import software.amazon.awssdk.services.firehose.model.Record;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class RecordBatch {
 
@@ -32,9 +33,20 @@ public class RecordBatch {
      */
     long LAST_BATCH_TIME_DIFF_ALLOWED_MILLIS = 3000;
 
+    /**
+     * List of records
+     */
     private List<Record> records;
+
+    /**
+     * Timestamp for when last batch was pulled from the list
+     */
     private long lastProcessedTimeStamp = 0;
-    private List<BatchFullCallback> batchFullCallbacks = new ArrayList<>();
+
+    /**
+     * Callback handler for batch
+     */
+    private Consumer<List<Record>> recordConsumer;
 
     public RecordBatch() {
         initialize();
@@ -86,12 +98,12 @@ public class RecordBatch {
         }
     }
 
-    void setBatchListener(final BatchFullCallback callback) {
-        batchFullCallbacks.add(callback);
+    void setBatchConsumer(final Consumer<List<Record>> recordConsumer) {
+        this.recordConsumer = recordConsumer;
     }
 
     private void onFullRecord(List<Record> records){
-        batchFullCallbacks.forEach(batchFullCallback -> batchFullCallback.batchIsComplete(records));
+        recordConsumer.accept(records);
     }
 
     private void addRecord(Record record) {

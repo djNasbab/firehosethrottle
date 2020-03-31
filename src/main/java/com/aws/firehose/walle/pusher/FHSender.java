@@ -47,7 +47,7 @@ public class FHSender {
                 .whenComplete(firehoseMessageHandler.getPutRecordBatchResponseConsumer(request));
     }
 
-    void sendRecordsToFHSync(final List<Record> data) {
+    PutRecordBatchResponse sendRecordsToFHSync(final List<Record> data) {
         try {
             sentMessageCounter.increment(data.size());
 
@@ -58,8 +58,10 @@ public class FHSender {
 
             final PutRecordBatchResponse putRecordBatchResponse = firehoseAsyncClient.putRecordBatch(request).get();
             firehoseMessageHandler.handleResponse(request, putRecordBatchResponse);
+            return putRecordBatchResponse;
         } catch (InterruptedException | ExecutionException e) {
             logger.error("Error while processing Sync messaging", e);
+            return null;
         }
     }
 }

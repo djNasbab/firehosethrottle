@@ -40,7 +40,7 @@ public class DataProcessor {
         this.sentMessageCounter = sentMessageCounter;
 
         //Setup the listener for when the batch is full and ready to send OR the timeout has been met ( 5 seconds )
-        recordBatch.setBatchListener(FHSender::sendRecordsToFHAsync);
+        recordBatch.setBatchConsumer(FHSender::sendRecordsToFHAsync);
     }
 
     @PostConstruct
